@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="ONION.css">
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Onion Leaf Disease Detector</title>
@@ -52,80 +51,42 @@
             </div>
         </section>
 
-          <section id="detect" class="detection-section">
-    <h2>Detect Onion Leaf Disease</h2>
+        <section id="detect" class="detection-section">
+            <h2>Detect Onion Leaf Disease</h2>
+            <div class="upload-area">
+                <p>Select or capture an image of an onion leaf for analysis:</p>
+                <input type="file" id="imageInput" accept="image/*">
+                <button id="captureFromCameraBtn" class="btn primary-btn"><i class="fas fa-camera"></i> Capture with Camera</button>
+                <button id="uploadBtn" class="btn primary-btn"><i class="fas fa-upload"></i> Upload Image</button>
 
-    <div class="upload-area">
-        <p>Select or capture an image of an onion leaf for analysis:</p>
+                <div class="image-preview-container">
+                    <video id="videoPreview" autoplay playsinline style="display: none;"></video>
+                    <img id="imagePreview" src="#" alt="Image Preview" style="display: none;">
+                    <p id="previewPlaceholder">No image selected</p>
+                </div>
 
-        <!-- Hidden file input -->
-        <input type="file" id="imageInput" accept="image/*">
+                <button id="analyzeImageBtn" class="btn success-btn" disabled>
+                    <i class="fas fa-search"></i> Analyze Image
+                </button>
+            </div>
 
-        <!-- Buttons -->
-        <button id="captureFromCameraBtn" class="btn primary-btn"><i class="fas fa-camera"></i> Capture with Camera</button>
-        <button id="uploadBtn" class="btn primary-btn"><i class="fas fa-upload"></i> Upload Image</button>
-
-        <!-- Shared preview box for video or image -->
-        <div class="image-preview-container">
-            <video id="videoPreview" autoplay playsinline style="display: none;"></video>
-            <img id="imagePreview" src="#" alt="Image Preview" style="display: none;">
-            <p id="previewPlaceholder">No image selected</p>
-        </div>
-
-
-        <!-- Analyze Button -->
-        <button id="analyzeImageBtn" class="btn success-btn" disabled>
-            <i class="fas fa-search"></i> Analyze Image
-        </button>
-    </div>
-    
-
-    <!-- Results Section -->
-    <div id="resultsSection" class="results-area" style="display: none;">
-        <h3>Analysis Results</h3>
-        <div class="result-item">
-            <strong>Disease Type:</strong> <span id="diseaseType"></span>
-        </div>
-        <div class="result-item">
-            <strong>Confidence Score:</strong> <span id="confidenceScore"></span>
-        </div>
-        <div class="result-description">
-            <h4>Description:</h4>
-            <p id="diseaseDescription"></p>
-        </div>
-        <div class="prescription-mitigation">
-            <h4>Prescription:</h4>
-            <ul id="prescriptionList"></ul>
-            <h4>Mitigation Strategies:</h4>
-            <ul id="mitigationList"></ul>
-        </div>
-        <button class="btn share-btn"><i class="fas fa-share-alt"></i> Share Results</button>
-    </div>
-</section>
+            <div id="resultsSection" class="results-area" style="display: none;">
+                <h3>Analysis Results</h3>
+                <div class="result-item"><strong>Disease Type:</strong> <span id="diseaseType"></span></div>
+                <div class="result-item"><strong>Confidence Score:</strong> <span id="confidenceScore"></span></div>
+                <div class="result-description"><h4>Description:</h4><p id="diseaseDescription"></p></div>
+                <div class="prescription-mitigation">
+                    <h4>Prescription:</h4><ul id="prescriptionList"></ul>
+                    <h4>Mitigation Strategies:</h4><ul id="mitigationList"></ul>
+                </div>
+                <button class="btn share-btn"><i class="fas fa-share-alt"></i> Share Results</button>
+            </div>
+        </section>
 
         <section id="history" class="history-section">
             <h2>Previous Classifications</h2>
-            <div class="history-list">
-                <!-- Example History Item (will be dynamically loaded by JS) -->
-                <div class="history-item">
-                    <div class="history-details">
-                        <strong>Date:</strong> 2023-10-26 <br>
-                        <strong>Disease:</strong> Downy Mildew <br>
-                        <strong>Confidence:</strong> 95%
-                    </div>
-                    <button class="btn view-details-btn"><i class="fas fa-eye"></i> View Details</button>
-                </div>
-                <div class="history-item">
-                    <div class="history-details">
-                        <strong>Date:</strong> 2023-10-20 <br>
-                        <strong>Disease:</strong> Healthy <br>
-                        <strong>Confidence:</strong> 99%
-                    </div>
-                    <button class="btn view-details-btn"><i class="fas fa-eye"></i> View Details</button>
-                </div>
-                <!-- More history items would be loaded here -->
-                <p id="noHistoryMessage" style="display: none;">No previous classifications found.</p>
-            </div>
+            <div class="history-list"></div>
+            <p id="noHistoryMessage" style="display: none;">No previous classifications found.</p>
         </section>
 
         <section id="recommendations" class="recommendations-section">
@@ -164,6 +125,7 @@
                     <li><strong>Organic Amendments:</strong> Add organic matter like compost to improve soil health and plant resilience.</li>
                 </ul>
             </div>
+        </section>
     </main>
 
     <footer>
@@ -173,7 +135,6 @@
     </footer>
 
     <script>
-    // UI Elements
     const imageInput = document.getElementById('imageInput');
     const imagePreview = document.getElementById('imagePreview');
     const previewPlaceholder = document.getElementById('previewPlaceholder');
@@ -183,7 +144,6 @@
     const captureFromCameraBtn = document.getElementById('captureFromCameraBtn');
     const uploadBtn = document.getElementById('uploadBtn');
 
-    // Simulated sample images
     const sampleImages = [
         { src: 'img/Onion Leaf.jpg', label: 'Healthy' },
         { src: 'img/Downy Mildew.jpg', label: 'Downy Mildew' },
@@ -194,46 +154,40 @@
     let stream = null;
     let isCameraOn = false;
 
-    // File Upload Handler
-       // File Upload Handler
-imageInput.addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            imagePreview.src = e.target.result;
-            imagePreview.style.display = 'block';
-            previewPlaceholder.style.display = 'none';
-            analyzeImageBtn.disabled = false; // Enable Analyze button
-        };
-        reader.readAsDataURL(file);
+    imageInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                previewPlaceholder.style.display = 'none';
+                analyzeImageBtn.disabled = false;
 
-        // === Simulate label based on file name ===
-        const filename = file.name.toLowerCase();
-        if (filename.includes('downy')) {
-            imagePreview.dataset.simulatedLabel = 'Downy Mildew';
-        } else if (filename.includes('purple')) {
-            imagePreview.dataset.simulatedLabel = 'Purple Blotch';
-        } else if (filename.includes('stemphylium')) {
-            imagePreview.dataset.simulatedLabel = 'Stemphylium Leaf Blight';
-        } else if (filename.includes('healthy') || filename.includes('onion')) {
-            imagePreview.dataset.simulatedLabel = 'Healthy';
+                const filename = file.name.toLowerCase();
+                if (filename.includes('downy')) {
+                    imagePreview.dataset.simulatedLabel = 'Downy Mildew';
+                } else if (filename.includes('purple')) {
+                    imagePreview.dataset.simulatedLabel = 'Purple Blotch';
+                } else if (filename.includes('stemphylium')) {
+                    imagePreview.dataset.simulatedLabel = 'Stemphylium Leaf Blight';
+                } else if (filename.includes('healthy') || filename.includes('onion')) {
+                    imagePreview.dataset.simulatedLabel = 'Healthy';
+                } else {
+                    imagePreview.dataset.simulatedLabel = 'Unknown';
+                }
+
+                resultsSection.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
         } else {
-            imagePreview.dataset.simulatedLabel = 'Unknown';
+            imagePreview.src = '#';
+            imagePreview.style.display = 'none';
+            previewPlaceholder.style.display = 'block';
+            analyzeImageBtn.disabled = true;
         }
+    });
 
-        resultsSection.style.display = 'none'; // Hide results until user clicks Analyze
-    } else {
-        imagePreview.src = '#';
-        imagePreview.style.display = 'none';
-        previewPlaceholder.style.display = 'block';
-        analyzeImageBtn.disabled = true;
-    }
-});
-
-
-
-    // Analyze Button Click (Simulated Result)
     analyzeImageBtn.addEventListener('click', function() {
         const fakeLabel = imagePreview.dataset.simulatedLabel || 'Downy Mildew';
 
@@ -245,47 +199,49 @@ imageInput.addEventListener('change', function(event) {
         const mitigationList = document.getElementById('mitigationList');
 
         if (fakeLabel === 'Downy Mildew') {
-            description.textContent = 'Downy mildew is a common and destructive disease of onions, caused by the oomycete Peronospora destructor. It appears as pale green to yellow spots or streaks on older leaves, which later turn purplish-brown and fuzzy, especially in humid conditions.';
-            prescriptionList.innerHTML = `
-                <li>Apply chlorothalonil (2 g/L water) as a foliar spray every 7–10 days.</li>
-                <li>Remove and destroy infected plant debris immediately.</li>
-            `;
-            mitigationList.innerHTML = `
-                <li>Avoid overhead irrigation; use drip irrigation.</li>
-                <li>Rotate crops with non-host plants for 3-4 years.</li>
-                <li>Ensure good air circulation by proper plant spacing.</li>
-            `;
+            description.textContent = 'Downy mildew is caused by Peronospora destructor...';
+            prescriptionList.innerHTML = `<li>Use chlorothalonil</li>`;
+            mitigationList.innerHTML = `<li>Avoid overhead watering</li>`;
         } else if (fakeLabel === 'Purple Blotch') {
-            description.textContent = 'Purple blotch affects onion leaves and appears as elliptical, sunken, and purplish lesions. It is caused by Alternaria porri and often develops in warm, humid conditions.';
-            prescriptionList.innerHTML = `
-                <li>Apply azoxystrobin, propiconazole, or tebuconazole fungicides.</li>
-            `;
-            mitigationList.innerHTML = `
-                <li>Improve plant spacing and reduce leaf wetness.</li>
-            `;
+            description.textContent = 'Purple blotch appears as sunken purple lesions...';
+            prescriptionList.innerHTML = `<li>Apply tebuconazole</li>`;
+            mitigationList.innerHTML = `<li>Improve spacing</li>`;
         } else if (fakeLabel === 'Stemphylium Leaf Blight') {
-            description.textContent = 'Stemphylium leaf blight is characterized by elongated tan spots with yellow halos. It is caused by Stemphylium vesicarium and spreads rapidly in warm, wet weather.';
-            prescriptionList.innerHTML = `
-                <li>Use boscalid or pyraclostrobin fungicides.</li>
-            `;
-            mitigationList.innerHTML = `
-                <li>Reduce humidity and avoid overhead watering.</li>
-            `;
+            description.textContent = 'Tan lesions caused by Stemphylium vesicarium...';
+            prescriptionList.innerHTML = `<li>Use boscalid</li>`;
+            mitigationList.innerHTML = `<li>Reduce humidity</li>`;
         } else if (fakeLabel === 'Healthy') {
-            description.textContent = 'This onion leaf appears healthy with no visible signs of fungal disease.';
-            prescriptionList.innerHTML = `<li>No treatment necessary.</li>`;
-            mitigationList.innerHTML = `<li>Maintain proper crop care and monitoring.</li>`;
+            description.textContent = 'This onion leaf appears healthy.';
+            prescriptionList.innerHTML = `<li>No action needed</li>`;
+            mitigationList.innerHTML = `<li>Maintain proper care</li>`;
         }
 
         resultsSection.style.display = 'block';
+
+        // SAVE to MySQL
+        fetch('save_result.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                image: imagePreview.src,
+                disease: fakeLabel,
+                confidence: 95.0,
+                description: description.textContent,
+                prescription: Array.from(prescriptionList.children).map(li => li.textContent).join('; '),
+                mitigation: Array.from(mitigationList.children).map(li => li.textContent).join('; ')
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log("Saved:", data);
+            loadHistory(); // refresh history
+        });
     });
 
-    // Upload Button Click
     uploadBtn.addEventListener('click', function() {
         imageInput.click();
     });
 
-    // Simulate Camera Behavior: Start camera OR capture random image
     captureFromCameraBtn.addEventListener('click', async () => {
         if (!isCameraOn) {
             try {
@@ -298,8 +254,7 @@ imageInput.addEventListener('change', function(event) {
                 resultsSection.style.display = 'none';
                 captureFromCameraBtn.textContent = '📸 Capture';
             } catch (err) {
-                alert('Camera access was denied or failed.');
-                console.error(err);
+                alert('Camera access was denied.');
             }
         } else {
             if (stream) {
@@ -317,15 +272,58 @@ imageInput.addEventListener('change', function(event) {
         }
     });
 
-    // Smooth scrolling
     document.querySelectorAll('nav ul li a').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
+            document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
         });
     });
-</script>
+
+    function loadHistory() {
+    fetch('get_history.php')
+        .then(res => res.json())
+        .then(data => {
+            const list = document.querySelector('.history-list');
+            const noMsg = document.getElementById('noHistoryMessage');
+            list.innerHTML = '';
+
+            if (!data || data.length === 0) {
+                noMsg.style.display = 'block';
+                return;
+            }
+
+            noMsg.style.display = 'none';
+
+            data.forEach(record => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `
+                    <div class="history-details">
+                        <strong>Date:</strong> ${record.timestamp} <br>
+                        <strong>Disease:</strong> ${record.disease} <br>
+                        <strong>Confidence:</strong> ${record.confidence}% <br>
+                    </div>
+                    <button class="btn view-details-btn">View Details</button>
+                    <div class="history-expanded-details" style="display: none; margin-top: 10px; border-top: 1px solid #ccc; padding-top: 10px;">
+                        <img src="${record.image}" alt="Leaf Image" style="max-width: 100%; border: 1px solid #888; margin-bottom: 10px;" />
+                        <p><strong>Description:</strong> ${record.description}</p>
+                        <p><strong>Prescription:</strong> ${record.prescription}</p>
+                        <p><strong>Mitigation:</strong> ${record.mitigation}</p>
+                    </div>
+                `;
+
+                const btn = div.querySelector('.view-details-btn');
+                const detailDiv = div.querySelector('.history-expanded-details');
+                btn.addEventListener('click', () => {
+                    detailDiv.style.display = detailDiv.style.display === 'none' ? 'block' : 'none';
+                });
+
+                list.appendChild(div);
+            });
+        });
+    }
+
+    loadHistory();
+    </script>
 </body>
 </html>
