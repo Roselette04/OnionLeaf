@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Onion Leaf Disease Detector</title>
     <link rel="stylesheet" href="ONION.css">
-    <!-- Font Awesome for icons (optional, but good for UI) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
@@ -79,6 +78,7 @@
             <i class="fas fa-search"></i> Analyze Image
         </button>
     </div>
+    
 
     <!-- Results Section -->
     <div id="resultsSection" class="results-area" style="display: none;">
@@ -102,7 +102,6 @@
         <button class="btn share-btn"><i class="fas fa-share-alt"></i> Share Results</button>
     </div>
 </section>
-
 
         <section id="history" class="history-section">
             <h2>Previous Classifications</h2>
@@ -196,25 +195,43 @@
     let isCameraOn = false;
 
     // File Upload Handler
-    imageInput.addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                imagePreview.src = e.target.result;
-                imagePreview.style.display = 'block';
-                previewPlaceholder.style.display = 'none';
-                analyzeImageBtn.disabled = false;
-                imagePreview.dataset.simulatedLabel = '';
-            };
-            reader.readAsDataURL(file);
+       // File Upload Handler
+imageInput.addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            imagePreview.src = e.target.result;
+            imagePreview.style.display = 'block';
+            previewPlaceholder.style.display = 'none';
+            analyzeImageBtn.disabled = false; // Enable Analyze button
+        };
+        reader.readAsDataURL(file);
+
+        // === Simulate label based on file name ===
+        const filename = file.name.toLowerCase();
+        if (filename.includes('downy')) {
+            imagePreview.dataset.simulatedLabel = 'Downy Mildew';
+        } else if (filename.includes('purple')) {
+            imagePreview.dataset.simulatedLabel = 'Purple Blotch';
+        } else if (filename.includes('stemphylium')) {
+            imagePreview.dataset.simulatedLabel = 'Stemphylium Leaf Blight';
+        } else if (filename.includes('healthy') || filename.includes('onion')) {
+            imagePreview.dataset.simulatedLabel = 'Healthy';
         } else {
-            imagePreview.src = '#';
-            imagePreview.style.display = 'none';
-            previewPlaceholder.style.display = 'block';
-            analyzeImageBtn.disabled = true;
+            imagePreview.dataset.simulatedLabel = 'Unknown';
         }
-    });
+
+        resultsSection.style.display = 'none'; // Hide results until user clicks Analyze
+    } else {
+        imagePreview.src = '#';
+        imagePreview.style.display = 'none';
+        previewPlaceholder.style.display = 'block';
+        analyzeImageBtn.disabled = true;
+    }
+});
+
+
 
     // Analyze Button Click (Simulated Result)
     analyzeImageBtn.addEventListener('click', function() {
